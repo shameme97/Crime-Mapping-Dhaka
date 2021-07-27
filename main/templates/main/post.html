@@ -1,0 +1,14 @@
+{% extends 'main/base.html' %} <!-- inherits the base html -->
+
+{% block title %}Post A Crime-Crime Area Map{% endblock %}
+
+{% block content %}
+Post A Crime
+	{% csrf_token %}
+	<form method="post", action="/post/">
+		{{form.as_p}}
+		<button type="submit", name="save">Post Crime Incident</button>
+		
+	</form>
+
+{% endblock %}

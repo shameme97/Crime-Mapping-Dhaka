@@ -1,0 +1,12 @@
+{% extends 'main/base.html' %} <!-- inherits the base html -->
+
+{% block title %}View Areas-Crime Area Map{% endblock %}
+
+{% block content %}
+	<h1>List of Areas:</h1>
+	<ul>
+		{% for area,number in my_dict.items %}
+			<li>{{area}} : {{number}}</li>
+		{% endfor %}
+	</ul>
+{% endblock %}
