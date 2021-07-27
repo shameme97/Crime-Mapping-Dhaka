@@ -4,8 +4,8 @@
 
 {% block content %}
 Post A Crime
-	{% csrf_token %}
 	<form method="post", action="/post/">
+		{% csrf_token %}
 		{{form.as_p}}
 		<button type="submit", name="save">Post Crime Incident</button>
 		

@@ -14,15 +14,10 @@ def home(response):
 
 def areas(response):
 	my_dict = {}
-	total_areas = len(Area.objects.all())
-	st = "<h1>Areas:</h1>"
-	for i in range(1,total_areas+1):
-		ls = Area.objects.get(id=i)
-		# st += ls.area_name + " : " + str(ls.number_of_crimes) + "<br> </br>"
-		# my_dict[i] = ls
-		my_dict[ls.area_name] = ls.number_of_crimes
-
-	# return HttpResponse("<p>%s</p>" %st)
+	i=0
+	for obj in list(Area.objects.all()):
+		my_dict[i] = obj
+		i += 1
 	return render(response, "main/list.html", {'my_dict':my_dict})
 
 def post(response):
@@ -37,9 +32,20 @@ def post(response):
 			rs = form.cleaned_data["report_status"]
 			rid = form.cleaned_data["report_id"]
 			desc = form.cleaned_data["description"]
-			crime = CrimeIncident(nature_of_crime=n, date_of_crime=d, time_of_crime=t, area=a, location=l, report_status=rs, report_id=rid, description=desc)
+			crime = CrimeIncident(nature_of_crime=n, date_of_crime=d, time_of_crime=t, area_name=a, location=l, report_status=rs, report_id=rid, description=desc)
 			crime.save()
-		return HttpResponseRedirect("/%i" %crime.id)
+
+			if Area.objects.filter(name=a).exists():
+				ls = Area.objects.get(name=a)
+				ls.number_of_crimes+=1
+				ls.save()
+			else:
+				ls = Area(name=a,number_of_crimes=1)
+				ls.save()
+
+		
+		# return HttpResponseRedirect("/%i" %crime.id)
+		return render(response, "main/home.html", {})
 	else:
 		form = CreatePost()
 	return render(response, "main/post.html", {"form": form})
