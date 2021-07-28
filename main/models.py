@@ -4,6 +4,8 @@ from django.db import models
 
 class CrimeIncident(models.Model):
 	# incident = models.ForeignKey(Area, on_delete=models.CASCADE)
+	email = models.CharField(max_length=50)
+	username = models.CharField(max_length=20)
 	area_name = models.CharField(max_length=150)
 	nature_of_crime = models.CharField(max_length=50)
 	report_status = models.BooleanField()

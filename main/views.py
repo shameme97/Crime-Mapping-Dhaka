@@ -2,6 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import Area, CrimeIncident
 from .forms import CreatePost
+import random
+import string 
+import datetime
 
 # Create your views here.
 
@@ -20,10 +23,14 @@ def areas(response):
 		i += 1
 	return render(response, "main/list.html", {'my_dict':my_dict})
 
+def show_posts(response):
+	return render(response, "main/incidents.html", {})
+
 def post(response):
 	if response.method=="POST":
 		form = CreatePost(response.POST)
 		if form.is_valid():
+			e = form.cleaned_data["email"]
 			n = form.cleaned_data["nature"]
 			d = form.cleaned_data["date"]
 			t = form.cleaned_data["time"]
@@ -32,7 +39,8 @@ def post(response):
 			rs = form.cleaned_data["report_status"]
 			rid = form.cleaned_data["report_id"]
 			desc = form.cleaned_data["description"]
-			crime = CrimeIncident(nature_of_crime=n, date_of_crime=d, time_of_crime=t, area_name=a, location=l, report_status=rs, report_id=rid, description=desc)
+			random_name = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=10))
+			crime = CrimeIncident(nature_of_crime=n, date_of_crime=d, time_of_crime=t, area_name=a, location=l, report_status=rs, report_id=rid, description=desc, email=e, username=random_name, timestamp=datetime.datetime.now())
 			crime.save()
 
 			if Area.objects.filter(name=a).exists():
