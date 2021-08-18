@@ -6,7 +6,7 @@
 	<h1>List of Areas:</h1>
 	<ul>
 		{% for sl,info in my_dict.items %}
-			<li>{{info}}</li>
+			<li> <a href="incidents/{{sl}}">{{sl}}</a> : {{info}} </li> 
 		{% endfor %}
 	</ul>
 {% endblock %}
