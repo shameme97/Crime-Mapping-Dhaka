@@ -17,4 +17,5 @@ class CreatePost(forms.Form):
 	# report_status = forms.BooleanField(label="Report Status:", required=False)
 	report_status = forms.CharField(label="Report Status:", widget=forms.Select(choices=report_stat_choices))
 	report_id = forms.CharField(label="Report ID:", required=False)
-	description = forms.CharField(label="Description of crime:", max_length=200)
+	# description = forms.CharField(label="Description of crime:", max_length=200)
+	description = forms.CharField(label="Description of crime:", widget=forms.Textarea(attrs={"rows":5, "cols":50}))

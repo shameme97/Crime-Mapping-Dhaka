@@ -67,8 +67,8 @@ def post(response):
 				ls.save()
 
 		
-		# return HttpResponseRedirect("/%i" %crime.id)
-		return render(response, "main/home.html", {})
+		return HttpResponseRedirect("/Areas")
+		# return render(response, "main/list.html", {})
 	else:
 		form = CreatePost()
 	return render(response, "main/post.html", {"form": form})

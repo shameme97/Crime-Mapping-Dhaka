@@ -3,11 +3,17 @@
 {% block title %}Post A Crime-Crime Area Map{% endblock %}
 
 {% block content %}
-Post A Crime
+<h1>Post an incident:</h1>
+<br></br>
 	<form method="post", action="/post/">
 		{% csrf_token %}
-		{{form.as_p}}
-		<button type="submit", name="save">Post Crime Incident</button>
+		<table>
+			{{form}}
+		</table>
+		
+		<button type="submit" style="background-color:whitesmoke;margin-left:auto;margin-right:auto;display:block;margin-top:2%;margin-bottom:0%">
+   			Post Crime Incident
+		</button> 
 		
 	</form>
 
