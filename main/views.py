@@ -22,10 +22,6 @@ def areas(response):
 	my_dict = {}
 	for obj in list(Area.objects.all()):
 		my_dict[obj.name] = obj.number_of_crimes
-	# i=0
-	# for obj in list(Area.objects.all()):
-	# 	my_dict[i] = obj.name
-	# 	i+=1
 	return render(response, "main/list.html", {'my_dict':my_dict})
 
 def show_posts(request, area):

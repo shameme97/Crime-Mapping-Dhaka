@@ -1,16 +1,33 @@
 {% extends 'main/base.html' %} <!-- inherits the base html -->
 
-{% block title %}View Posts-Crime Area Map{% endblock %}
+
+<<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title> {% block title %}View Posts-Crime Area Map{% endblock %} </title>
+</head>
+<body>
 
 {% block content %}
 
+	
 	<h1>{{Area}}:</h1>
+	
+	
 	{% for sl,post in Posts.items %}
 		<p>
 		{% for item in post %}
 			<br> {{item}} </br>
 		{% endfor %}	
 		</p>
+		<hr/>
 	{% endfor %}
 	
 {% endblock %}
+
+
+
+</body>
+</html>
+
