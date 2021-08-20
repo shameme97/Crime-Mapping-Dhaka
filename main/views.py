@@ -29,15 +29,26 @@ def show_posts(request, area):
 	if request.method=="GET":
 		for i in list(CrimeIncident.objects.all()):
 			if i.area_name == area:
-				# incident = "Username : "+i.username+"\nPosted on : "+str(i.timestamp)+"\nNature of crime : "+i.nature_of_crime+"\nLocation : "+i.location+"\nDate : "+str(i.date_of_crime)+"\nTime : "+str(i.time_of_crime)+"Report Status : "+str(i.report_status)+"\nReport ID : "+str(i.report_id)+"\nDescription : "+i.description
-				# posts[i] = [i.username, i.timestamp, i.nature_of_crime, i.location, 
-				# i.date_of_crime, i.time_of_crime, i.report_status, i.report_id, i.description]
-				incident = ["Post ID : "+ str(i.id)]
-				incident += ["Username : "+i.username, "Posted on : "+str(i.timestamp)] 
-				incident +=	["Nature of crime : "+i.nature_of_crime, "Location : "+i.location]
-				incident += ["Date : "+str(i.date_of_crime), "Time : "+str(i.time_of_crime)]
-				incident += ["Report Status : "+str(i.report_status), "Report ID : "+str(i.report_id)]
-				incident += ["Description : "+i.description]
+				# incident = ["Post ID : "+ str(i.id)]
+				# incident += ["Username : "+i.username, "Posted on : "+str(i.timestamp)] 
+				# incident +=	["Nature of crime : "+i.nature_of_crime, "Location : "+i.location]
+				# incident += ["Date : "+str(i.date_of_crime), "Time : "+str(i.time_of_crime)]
+				# incident += ["Report Status : "+str(i.report_status), "Report ID : "+str(i.report_id)]
+				# incident += ["Description : "+i.description]
+
+				incident = {
+					'Post ID' : i.id,
+					'Username' : i.username,
+					'Posted on' : i.timestamp,
+					'Nature of crime' : i.nature_of_crime,
+					'Location' : i.location,
+					'Date' : i.date_of_crime,
+					'Time' : i.time_of_crime,
+					'Report Status' : i.report_status,
+					'Report ID' : i.report_id,
+					'Description' : i.description
+
+				}
 				posts[i] = incident
 	return render(request, "main/incidents.html", {'Posts':posts, 'Area':area})
 

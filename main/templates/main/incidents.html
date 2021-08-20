@@ -14,15 +14,21 @@
 	
 	<h1>{{Area}}:</h1>
 	
-	
+	<table  style="width:120%">
 	{% for sl,post in Posts.items %}
-		
-		{% for item in post %}
-			<br> {{item}} </br>
+		{% for key,value in post.items %}
+			<tr>
+				<td> {{key}} </td> 
+				<td> : </td> 
+				<td> {{value}} </td> 
+			
+
+			</tr>
 		{% endfor %}	
+	<tr> <td> <hr/> </td>  <td> <hr/> </td> <td> <hr/> </td> </tr>
 		
-		<hr/>
 	{% endfor %}
+	</table>
 	
 {% endblock %}
 

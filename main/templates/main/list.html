@@ -4,9 +4,11 @@
 
 {% block content %}
 	<h1>List of Areas:</h1>
-	<ul>
+	<table style="width:30%; background-color:#FFFFFF; text-align:left;font-family:tahoma" >
+		
 		{% for sl,info in my_dict.items %}
-			<li> <a href="incidents/{{sl}}">{{sl}}</a> : {{info}} </li> 
+		<tr> <th>  <a href="incidents/{{sl}}">{{sl}}</a> </th> <th> : </th><th> {{info}}  </th> </tr>
 		{% endfor %}
-	</ul>
+	
+	</table>
 {% endblock %}
