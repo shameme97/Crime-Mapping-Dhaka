@@ -6,32 +6,109 @@
 <head>
 	<meta charset="utf-8">
 	<title> {% block title %}View Posts-Crime Area Map{% endblock %} </title>
+
 </head>
 <body>
 
 {% block content %}
+<table>
+	<tr>
+		<td> 
+			<select id='filter' onchange='filterChanged(this.value);'>
+			<option value=''>Filter by:</option>
+			<option value='Nature of crime'>Nature of crime</option>
+			<option value='Report status'>Report status</option>
+			</select>
+			&nbsp;&nbsp;
+			<select id='options' onchange='optionSelected(this.value);'>
+			<option value=''>Select Option</option>
+			</select>
 
-	
+		</td>
+
+	</tr>
+	<tr>
+		<td> <p id="demo"></p> </td>
+
+	</tr>
+</table>
+<p></p>
+<script type="text/javascript">
+var nature_of_crime= ["Assault", "Pick-pocketing", "Vandalism", "Sexual-Harassment", "Stalking", "Mugging", "Kidnapping", "Snatching"];
+var report_status=["Reported", "Not Reported"];
+
+
+function filterChanged(filter)
+{
+	var selectOption = document.getElementById('options');
+	var ln = selectOption.length - 1;
+	while (ln > 0)
+		{
+		selectOption.remove(1); //Remove all but "Select State"
+		ln--;
+		}
+
+
+	var filterArray;
+
+	switch(filter)
+		{
+		case "Nature of crime":
+		filterArray=nature_of_crime
+		break;
+		case "Report status":
+		filterArray=report_status
+		break;
+		default:
+		}
+
+	for (i = 0; i < filterArray.length; i++)
+		{
+		var option = document.createElement('option');
+		option.text = filterArray[i];
+		option.value = filterArray[i];
+		selectOption.add(option);
+		}
+}
+
+function optionSelected(option) {
+	// body...
+	window.location.href = window.location.href+option
+
+	var selectOption = document.getElementById('filter');
+	var ln = selectOption.length - 1;
+	while (ln > 0)
+		{
+		selectOption.remove(1); //Remove all but "Select State"
+		ln--;
+		}
+
+}
+
+</script>
+
 	<h1>{{Area}}:</h1>
 	
-	<table  style="width:120%">
-	{% for sl,post in Posts.items %}
-		{% for key,value in post.items %}
-			<tr>
-				<td> {{key}} </td> 
-				<td> : </td> 
-				<td> {{value}} </td> 
+	<table >
+	{% if Posts|length > 0 %}
+		{% for sl,post in Posts.items %}
+			{% for key,value in post.items %}
+				<tr >
+					<td style="width:150px"> {{key}} </td> 
+					<td style="width:20px"> : </td> 
+					<td> {{value}} </td> 
+				</tr>
+			{% endfor %}	
+			<tr> <td colspan="3", style="width:1000px"> <hr/> </td> </tr>
 			
+		{% endfor %}
+	{% else %}
+		<p style="color:red"> No Posts To Show </p>
+	{% endif %}
 
-			</tr>
-		{% endfor %}	
-	<tr> <td> <hr/> </td>  <td> <hr/> </td> <td> <hr/> </td> </tr>
-		
-	{% endfor %}
 	</table>
 	
 {% endblock %}
-
 
 
 </body>

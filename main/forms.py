@@ -6,12 +6,24 @@ report_stat_choices= [
     ('Not Reported', 'Not Reported'),
     ]
 
+street_crime_choices= [
+	('Choose', 'Choose'),
+    ('Assault', 'Assault'),
+    ('Pick-pocketing', 'Pick-pocketing'),
+    ('Vandalism', 'Vandalism'),
+    ('Sexual-Harassment', 'Sexual-Harassment'),
+    ('Mugging', 'Mugging'),
+    ('Stalking', 'Stalking'),
+    ('Kidnapping', 'Kidnapping'),
+    ('Snatching', 'Snatching'),
+    ]
+
 
 class CreatePost(forms.Form):
 	email = forms.CharField(label="Email:", max_length=50)
 	date = forms.DateField(label="Date of crime:")
 	time = forms.TimeField(label="Time of crime:")
-	nature = forms.CharField(label="Nature of crime:", max_length=50)
+	nature = forms.CharField(label="Nature of crime:", max_length=50, widget=forms.Select(choices=street_crime_choices))
 	area_name = forms.CharField(label="Area", max_length=150)
 	location = forms.CharField(label="Location of crime:", max_length=100)
 	# report_status = forms.BooleanField(label="Report Status:", required=False)
