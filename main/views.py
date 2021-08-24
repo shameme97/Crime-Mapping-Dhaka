@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import Area, CrimeIncident
-from .forms import CreatePost
+from .models import Area, CrimeIncident, Comments
+from .forms import CreatePost, PostComment
 import random
 import string 
 import datetime
@@ -109,6 +109,11 @@ def show_posts(request, area):
 					incident.update({'Description' : i.description})
 				posts[i] = incident
 		no_of_posts = {'Number of posts:':count}
+		# for i in list(Comments.objects.all()):
+		# 	comments = {
+		# 		'Username' : i.username,
+		# 		'Commented' : i.comment,
+		# 	}
 	return render(request, "main/incidents.html", {'Posts':posts, 'Area':area, 'no_of_posts':no_of_posts})
 
 def post(response):
@@ -145,11 +150,25 @@ def post(response):
 				ls.save()
 		
 			return HttpResponseRedirect("/Areas")
-		# return render(response, "main/list.html", {})
 	else:
 		form = CreatePost()
 	return render(response, "main/post.html", {"form": form})
 
+def comment(response):
+	# return HttpResponseRedirect("/"+area)
+	if response.method=="POST":
+		form = PostComment(response.POST)	
+		if form.is_valid():
+			p = form.cleaned_data["post_id"]
+			e = form.cleaned_data["email"]
+			c = form.cleaned_data["comment"]
+			user_name = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=10))
+			com = Comments(email=e, username=user_name, comment=c, post_id=p)
+			com.save()
+			return HttpResponseRedirect("")
+	else:
+		form = PostComment()
+	return render(response, "main/comment.html", {"form": form})
 
 def filtering(request, area, filter1, filter2=""):
 	posts = {}

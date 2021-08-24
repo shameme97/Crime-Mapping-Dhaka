@@ -31,3 +31,8 @@ class CreatePost(forms.Form):
 	report_id = forms.CharField(label="Report ID:", required=False)
 	# description = forms.CharField(label="Description of crime:", max_length=200)
 	description = forms.CharField(label="Description of crime:", widget=forms.Textarea(attrs={"rows":5, "cols":50}))
+
+class PostComment(forms.Form):
+	email = forms.CharField(label="Email:", max_length=50)
+	post_id = forms.IntegerField()
+	comment = forms.CharField(label="Comment:", widget=forms.Textarea(attrs={"rows":5, "cols":50}))

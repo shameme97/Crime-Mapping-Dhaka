@@ -12,6 +12,7 @@ urlpatterns = [
 	path("Areas", views.areas, name="areas"),
 	path("Areas/<str:sort>", views.sort_areas, name="sort_areas"),
 	path("post/", views.post, name="post"),
+	path("comment/", views.comment, name="comment"),
 	path("incidents/<slug:area>/", views.show_posts, name="incidents"),
 	path("incidents/<str:area>/<str:filter1>/", views.filtering, name="filtering"),
 	path("incidents/<str:area>/<str:filter1>/<str:filter2>/", views.filtering, name="filtering"),

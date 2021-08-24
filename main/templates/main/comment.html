@@ -1,0 +1,20 @@
+{% extends 'main/base.html' %} <!-- inherits the base html -->
+
+{% block title %}Comment-Crime Area Map{% endblock %}
+
+{% block content %}
+<h1>Post a comment:</h1>
+<br>
+	<form method="post", action="/comment">
+		{% csrf_token %}
+		<table>
+			{{form}}
+		</table>
+
+		<button type="submit" style="background-color:whitesmoke;margin-left:250px;margin-right:auto;display:block;margin-top:2%;margin-bottom:0%">
+   			Post
+		</button> 
+		
+	</form>
+
+{% endblock %}
