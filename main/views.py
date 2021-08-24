@@ -10,7 +10,7 @@ import datetime
 
 
 def index(response):
-	return render(response, "main/testing.html", {})
+	return render(response, "main/base.html", {})
 
 def home(response):
 	msg = "Home/AllPosts"
@@ -136,7 +136,7 @@ def post(response):
 	return render(response, "main/post.html", {"form": form})
 
 
-def filtering(request, area, filter1):
+def filtering(request, area, filter1, filter2="", filter3=""):
 	posts = {}
 	if request.method=="GET":
 		for i in list(CrimeIncident.objects.all()):
@@ -157,5 +157,91 @@ def filtering(request, area, filter1):
 					incident.update({'Description' : i.description})
 				posts[i] = incident
 
+			if (i.nature_of_crime==filter2 or i.report_status==filter2) and i.area_name==area:
+				incident = {
+					'Post ID' : i.id,
+					'Username' : i.username,
+					'Posted on' : i.timestamp,
+					'Nature of crime' : i.nature_of_crime,
+					'Location' : i.location+", "+i.area_name,
+					'Date' : i.date_of_crime,
+					'Time' : i.time_of_crime,
+					'Report Status' : i.report_status,
+				}
+				if i.report_status=="Reported":
+					incident.update({'Report ID' : "#"+i.report_id, 'Description' : i.description})
+				else:
+					incident.update({'Description' : i.description})
+				posts[i] = incident
+
+			if (i.nature_of_crime==filter3 or i.report_status==filter3) and i.area_name==area:
+				incident = {
+					'Post ID' : i.id,
+					'Username' : i.username,
+					'Posted on' : i.timestamp,
+					'Nature of crime' : i.nature_of_crime,
+					'Location' : i.location+", "+i.area_name,
+					'Date' : i.date_of_crime,
+					'Time' : i.time_of_crime,
+					'Report Status' : i.report_status,
+				}
+				if i.report_status=="Reported":
+					incident.update({'Report ID' : "#"+i.report_id, 'Description' : i.description})
+				else:
+					incident.update({'Description' : i.description})
+
+				posts[i] = incident
+
 	return render(request, "main/incidents.html", {'Posts':posts, 'Area':area})
+
+
+def search_location(request, area, location):
+	posts={}
+	if request.method=="GET":
+		for i in list(CrimeIncident.objects.all()):
+			if location in i.location and i.area_name==area:
+				incident = {
+					'Post ID' : i.id,
+					'Username' : i.username,
+					'Posted on' : i.timestamp,
+					'Nature of crime' : i.nature_of_crime,
+					'Location' : i.location+", "+i.area_name,
+					'Date' : i.date_of_crime,
+					'Time' : i.time_of_crime,
+					'Report Status' : i.report_status,
+				}
+				if i.report_status=="Reported":
+					incident.update({'Report ID' : "#"+i.report_id, 'Description' : i.description})
+				else:
+					incident.update({'Description' : i.description})
+				posts[i] = incident
+	return render(request, "main/incidents.html", {'Posts':posts, 'Area':area})
+
+
+def filter_by_date(request, area, y1, m1, d1, y2, m2, d2):
+	posts={}
+	if request.method=="GET":
+		for i in list(CrimeIncident.objects.all()):
+			if i.area_name==area:
+				year = int(i.date_of_crime.strftime("%Y"))
+				month = int(i.date_of_crime.strftime("%m"))
+				day = int(i.date_of_crime.strftime("%d"))
+				if (y1<=year<=y2) and (m1<=month<=m2) and (d1<=day<=d2):
+					incident = {
+						'Post ID' : i.id,
+						'Username' : i.username,
+						'Posted on' : i.timestamp,
+						'Nature of crime' : i.nature_of_crime,
+						'Location' : i.location+", "+i.area_name,
+						'Date' : i.date_of_crime,
+						'Time' : i.time_of_crime,
+						'Report Status' : i.report_status,
+					}
+					if i.report_status=="Reported":
+						incident.update({'Report ID' : "#"+i.report_id, 'Description' : i.description})
+					else:
+						incident.update({'Description' : i.description})
+					posts[i] = incident
+	return render(request, "main/incidents.html", {'Posts':posts, 'Area':area})
+
 

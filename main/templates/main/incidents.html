@@ -12,28 +12,81 @@
 
 {% block content %}
 <table>
+	<!-- Load icon library -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
 	<tr>
-		<td> 
-			<select id='filter' onchange='filterChanged(this.value);'>
+		<td style="width:50%"> 
+			<select class="example" id='filter' onchange='filterChanged(this.value);'>
 			<option value=''>Filter by:</option>
 			<option value='Nature of crime'>Nature of crime</option>
 			<option value='Report status'>Report status</option>
 			</select>
-			&nbsp;&nbsp;
+			<br>
+			<!-- &nbsp;&nbsp; -->
 			<select id='options' onchange='optionSelected(this.value);'>
 			<option value=''>Select Option</option>
 			</select>
 
 		</td>
 
+		<td style="width:30%"> 
+			<form label='Date:' id='date_range'>
+			  <button type="submit">Filter by date</button>
+			  <input type="text" placeholder="From: YYYY/MM/DD" name="date" id='from'>
+			  <input type="text" placeholder="To: YYYY/MM/DD" name="date" id='to'>
+			</form>
+		</td>
+
+		<td> 
+			<!-- The form -->
+			<form class="example" action='' id='form'>
+			  <input type="text" placeholder="Search by location" name="search" id='query'>
+			  <!-- <button type="submit"><i class="fa fa-search"></i></button> -->
+			</form>
+		</td>
 	</tr>
 	<tr>
-		<td> <p id="demo"></p> </td>
+		<td> <p id="demo"></p> </td> 
+		<td>
+
+		</td>
 
 	</tr>
 </table>
 <p></p>
+
 <script type="text/javascript">
+
+// DATE BAR
+const date_range = document.getElementById('date_range');
+const from = document.getElementById('from');
+const to = document.getElementById('to');
+
+function clicked(event) {
+  event.preventDefault();
+  const url = window.location.href + from.value + '/' + to.value;
+  const win = window.open(url, '_blank');
+  win.focus();
+}
+date_range.addEventListener('submit', clicked);
+
+
+
+// SEARCH BAR
+const f = document.getElementById('form');
+const q = document.getElementById('query');
+
+function submitted(event) {
+  event.preventDefault();
+  const url = window.location.href + q.value;
+  const win = window.open(url, '_blank');
+  win.focus();
+}
+f.addEventListener('submit', submitted);
+
+
+// FILTER BAR
 var nature_of_crime= ["Assault", "Pick-pocketing", "Vandalism", "Sexual-Harassment", "Stalking", "Mugging", "Kidnapping", "Snatching"];
 var report_status=["Reported", "Not Reported"];
 
@@ -73,7 +126,7 @@ function filterChanged(filter)
 
 function optionSelected(option) {
 	// body...
-	window.location.href = window.location.href+option
+	window.location.href = window.location.href+option+'/'
 
 	var selectOption = document.getElementById('filter');
 	var ln = selectOption.length - 1;
@@ -82,8 +135,8 @@ function optionSelected(option) {
 		selectOption.remove(1); //Remove all but "Select State"
 		ln--;
 		}
-
 }
+
 
 </script>
 
