@@ -6,7 +6,6 @@
 <head>
 	<meta charset="utf-8">
 	<title> {% block title %}View Posts-Crime Area Map{% endblock %} </title>
-
 </head>
 <body>
 
@@ -16,18 +15,13 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 	<tr>
-		<td style="width:50%"> 
-			<select class="example" id='filter' onchange='filterChanged(this.value);'>
-			<option value=''>Filter by:</option>
-			<option value='Nature of crime'>Nature of crime</option>
-			<option value='Report status'>Report status</option>
-			</select>
-			<br>
-			<!-- &nbsp;&nbsp; -->
-			<select id='options' onchange='optionSelected(this.value);'>
-			<option value=''>Select Option</option>
-			</select>
 
+		<td style="width:30%"> 
+			<form label='Time:' id='time_range'>
+			  <button type="submit">Filter by time</button>
+			  <input type="text" placeholder="From: HH:MM" name="time" id='from2'>
+			  <input type="text" placeholder="To: HH:MM" name="time" id='to2'>
+			</form>
 		</td>
 
 		<td style="width:30%"> 
@@ -37,6 +31,21 @@
 			  <input type="text" placeholder="To: YYYY/MM/DD" name="date" id='to'>
 			</form>
 		</td>
+
+		<td style="width:50%"> 
+		
+			<select class="example" id='filter' onchange='filterChanged(this.value);'>
+			<option value=''>Filter by:</option>
+			<option value='Nature of crime'>Nature of crime</option>
+			<option value='Report status'>Report status</option>
+			</select>
+			<br>
+			<select id='options' onchange='optionSelected(this.value);'>
+			<option value=''>Select Option</option>
+			</select>
+		
+		</td>
+
 
 		<td> 
 			<!-- The form -->
@@ -71,7 +80,18 @@ function clicked(event) {
 }
 date_range.addEventListener('submit', clicked);
 
+// TIME BAR
+const time_range = document.getElementById('time_range');
+const from2 = document.getElementById('from2');
+const to2 = document.getElementById('to2');
 
+function clicked2(event) {
+  event.preventDefault();
+  const url = window.location.href + 'time/'+from2.value + '/' + to2.value;
+  const win = window.open(url, '_blank');
+  win.focus();
+}
+time_range.addEventListener('submit', clicked2);
 
 // SEARCH BAR
 const f = document.getElementById('form');
@@ -137,11 +157,17 @@ function optionSelected(option) {
 		}
 }
 
-
 </script>
-
-	<h1>{{Area}}:</h1>
 	
+<table><tr>
+			<td style="width:75%"> <h3>{{Area}}:</h3> </td>
+			<td> 
+					{% for key,value in no_of_posts.items %}
+						<h5> {{key}} {{value}} </h5>
+					{% endfor %}
+			</td> 
+</tr></table>
+
 	<table >
 	{% if Posts|length > 0 %}
 		{% for sl,post in Posts.items %}

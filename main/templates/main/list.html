@@ -1,9 +1,48 @@
 {% extends 'main/base.html' %} <!-- inherits the base html -->
 
-{% block title %}View Areas-Crime Area Map{% endblock %}
+
+<<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title> {% block title %}View Areas-Crime Area Map{% endblock %} </title>
+	<style type="text/css">
+		 
+
+
+	</style>
+</head>
+<body>
+
+
 
 {% block content %}
-	<h1>List of Areas:</h1>
+	<table> <tr>
+		<td style="width:500px"> <h2>List of Areas:</h2> </td>
+		<td> 
+			<form>  <label> Sort: </label>  
+				<select id='sort' onchange='sortChanged(this.value);'>  
+					<option value = "Default"> Default </option>  
+					<option value = "Ascending"> Ascending </option>  
+					<option value = "Descending"> Descending  </option>   
+				</select>  
+			</form>  
+ 		</td>
+	</tr> </table>
+	<p id='demo'> </p>
+<script type="text/javascript">
+	
+function sortChanged(sort) {
+	// body...
+	window.location.href = window.location.href+ '/' + sort
+}
+
+
+</script>
+
+
+
+
 	<table style="width:30%; background-color:#FFFFFF; text-align:left;font-family:tahoma" >
 		
 		{% for sl,info in my_dict.items %}
@@ -14,3 +53,7 @@
 
 	
 {% endblock %}
+
+
+</body>
+</html>

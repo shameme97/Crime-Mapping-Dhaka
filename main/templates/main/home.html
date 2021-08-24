@@ -14,13 +14,14 @@
 
 <table>
 	<tr>
-		<td style="width:500px"> <h2> <a href={{Msg}}>Show All Posts</a> </h2> </td>
-		<td> <button type="button", onclick='showFilter();', style="margin: 1px;">Show Filtering Options</button> </td>
+		<td style="width:400px"> <h3> <a href={{Msg}}>Show All Posts</a> </h3> </td>
+		<td> 
+			{% for key,value in no_of_posts.items %}
+				<h5> {{key}} {{value}} </h5>
+			{% endfor %}
+		</td>
 	</tr>
-</table>
 
-
-<table>
 	<tr>
 		<td id = 'filterTable', style="display:none" > 
 			<select id='filter' onchange='filterChanged(this.value);'>
@@ -32,8 +33,9 @@
 			<select id='options' onchange='optionSelected(this.value);'>
 			<option value=''>Select Option</option>
 			</select>
-
 		</td>
+
+		<td> <button type="button", onclick='showFilter();', style="margin: 1px;">Show Filtering Options</button> </td>
 
 	</tr>
 	<tr>
