@@ -1,6 +1,7 @@
 from django.shortcuts import render
+from django.utils import timezone
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import Area, CrimeIncident, Comments
+from .models import Area, CrimeIncident, Comment
 from .forms import CreatePost, PostComment
 import random
 import string 
@@ -20,7 +21,7 @@ def home(response):
 def all_posts(request):
 	my_dict = {}
 	count = 0
-	if request.method=="GET":
+	if request.method=="GET" or True:
 		msg = ""
 		for i in list(CrimeIncident.objects.all()):
 			count += 1
@@ -35,20 +36,18 @@ def all_posts(request):
 						'Report Status' : i.report_status,
 					}
 			if i.report_status=="Reported":
-				incident.update({'Report ID' : "#"+i.report_id, 'Description' : i.description})
-			else:
-				incident.update({'Description' : i.description})
+				incident.update({'Report ID' : "#"+i.report_id})
+			incident.update({'Description' : i.description})
 			my_dict[i] = incident
 		no_of_posts = {'Number of posts:':count}
 		return render(request, "main/home.html", {'my_dict':my_dict, 'Msg':msg, 'no_of_posts':no_of_posts})
 
-def filter_all_posts(request, filter1):
-	my_dict = {}
+def searchHome(request, area):
+	my_dict={}
 	count=0
 	if request.method=="GET":
 		for i in list(CrimeIncident.objects.all()):
-			if i.nature_of_crime==filter1 or i.report_status==filter1:
-				count += 1
+			if i.area_name.lower().startswith(area.lower()):
 				incident = {
 					'Post ID' : i.id,
 					'Username' : i.username,
@@ -60,10 +59,11 @@ def filter_all_posts(request, filter1):
 					'Report Status' : i.report_status,
 				}
 				if i.report_status=="Reported":
-					incident.update({'Report ID' : "#"+i.report_id, 'Description' : i.description})
-				else:
-					incident.update({'Description' : i.description})
+					incident.update({'Report ID' : "#"+i.report_id})
+				incident.update({'Description' : i.description})
 				my_dict[i] = incident
+				count += 1
+
 		no_of_posts = {'Number of posts:':count}
 	return render(request, "main/home.html", {'my_dict':my_dict, 'no_of_posts':no_of_posts})
 
@@ -82,40 +82,18 @@ def sort_areas(request, sort):
 			my_dict = {k: v for k, v in sorted(my_dict.items(), key=lambda item: item[1])}
 		elif sort == 'Descending':
 			my_dict = {k: v for k, v in sorted(my_dict.items(), key=lambda item: item[1], reverse=True)}
-
 	return render(request, "main/list.html", {'my_dict':my_dict})
-	
 
-def show_posts(request, area):
-	posts = {}
-	count=0
+
+def search_in_areas(request, area):
+	my_dict = {}
 	if request.method=="GET":
-		for i in list(CrimeIncident.objects.all()):
-			if i.area_name.lower() == area.lower():
-				count += 1
-				incident = {
-					'Post ID' : i.id,
-					'Username' : i.username,
-					'Posted on' : i.timestamp,
-					'Nature of crime' : i.nature_of_crime,
-					'Location' : i.location+", "+i.area_name,
-					'Date' : i.date_of_crime,
-					'Time' : i.time_of_crime,
-					'Report Status' : i.report_status,
-				}
-				if i.report_status=="Reported":
-					incident.update({'Report ID' : "#"+i.report_id, 'Description' : i.description})
-				else:
-					incident.update({'Description' : i.description})
-				posts[i] = incident
-		no_of_posts = {'Number of posts:':count}
-		# for i in list(Comments.objects.all()):
-		# 	comments = {
-		# 		'Username' : i.username,
-		# 		'Commented' : i.comment,
-		# 	}
-	return render(request, "main/incidents.html", {'Posts':posts, 'Area':area, 'no_of_posts':no_of_posts})
+		for i in list(Area.objects.all()):
+			if i.name.lower().startswith(area.lower()):
+				my_dict[i.name] = i.number_of_crimes	
+	return render(request, "main/list.html", {'my_dict':my_dict})
 
+	
 def post(response):
 	if response.method=="POST":
 		form = CreatePost(response.POST)
@@ -135,7 +113,11 @@ def post(response):
 			if rs=="Reported" and rid=="":
 				error = "Please enter report ID!"
 			desc = form.cleaned_data["description"]
-			random_name = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=10))
+			random_name = ''
+			for user in CrimeIncident.objects.filter(email=e):
+				random_name = user.username
+			if random_name=='':
+				random_name = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=10))
 			if error!="":
 				return render(response, "main/post.html", {"form": form,"Error":error})
 			crime = CrimeIncident(nature_of_crime=n, date_of_crime=d, time_of_crime=t, area_name=a, location=l, report_status=rs, report_id=rid, description=desc, email=e, username=random_name, timestamp=datetime.datetime.now())
@@ -149,33 +131,49 @@ def post(response):
 				ls = Area(name=a,number_of_crimes=1)
 				ls.save()
 		
-			return HttpResponseRedirect("/Areas")
+			return HttpResponseRedirect("http://127.0.0.1:8000/Areas/incidents/"+a)
 	else:
 		form = CreatePost()
 	return render(response, "main/post.html", {"form": form})
 
 def comment(response):
-	# return HttpResponseRedirect("/"+area)
 	if response.method=="POST":
 		form = PostComment(response.POST)	
 		if form.is_valid():
-			p = form.cleaned_data["post_id"]
 			e = form.cleaned_data["email"]
+			p = form.cleaned_data["post_id"]
 			c = form.cleaned_data["comment"]
-			user_name = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=10))
-			com = Comments(email=e, username=user_name, comment=c, post_id=p)
+			user_name = ''
+			for incident in list(CrimeIncident.objects.all()):
+				if e == incident.email:
+					user_name = incident.username
+			for com in list(Comment.objects.all()):
+				if e == com.email:
+					user_name = com.username
+			if user_name=='':	
+				user_name = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=10))
+			
+			if len(CrimeIncident.objects.filter(id=p))==0:
+				error = "Post ID does not exist!"
+				return render(response, "main/comment.html", {"form": form, "Error": error})
+			else:
+				page = CrimeIncident.objects.get(id=p).area_name
+			com = Comment(email=e, username=user_name, comment=c, post_id=p)
 			com.save()
-			return HttpResponseRedirect("")
+			
+			return HttpResponseRedirect("http://127.0.0.1:8000/Areas/incidents/"+page)
 	else:
 		form = PostComment()
 	return render(response, "main/comment.html", {"form": form})
 
-def filtering(request, area, filter1, filter2=""):
+def show_posts(request, area):
 	posts = {}
 	count=0
+	comments ={}
 	if request.method=="GET":
 		for i in list(CrimeIncident.objects.all()):
-			if (i.nature_of_crime==filter1 or i.report_status==filter1) and i.area_name.lower() ==area.lower() :
+			if i.area_name.lower() == area.lower():
+				count += 1
 				incident = {
 					'Post ID' : i.id,
 					'Username' : i.username,
@@ -187,12 +185,47 @@ def filtering(request, area, filter1, filter2=""):
 					'Report Status' : i.report_status,
 				}
 				if i.report_status=="Reported":
-					incident.update({'Report ID' : "#"+i.report_id, 'Description' : i.description})
-				else:
-					incident.update({'Description' : i.description})
+					incident.update({'Report ID' : "#"+i.report_id})	
+				incident.update({'Description' : i.description})
+
+				comment = {}
+				for j in Comment.objects.filter(post_id=i.id):
+					comment.update( {j.comment: 'User '+j.username+' commented: '})
+					comments[i] = comment
+
+				posts[i] = incident
+		no_of_posts = {'Number of posts:':count}
+	return render(request, "main/incidents.html", {'Posts':posts, 'Area':area, 'no_of_posts':no_of_posts, 'comments':comments})
+
+
+def filtering(request, area, filter1, filter2=""):
+	posts = {}
+	comments={}
+	count=0
+	if request.method=="GET":
+		for i in list(CrimeIncident.objects.all()):
+			if (i.nature_of_crime==filter1 or i.report_status==filter1) and i.area_name.lower()==area.lower():
+				incident = {
+					'Post ID' : i.id,
+					'Username' : i.username,
+					'Posted on' : i.timestamp,
+					'Nature of crime' : i.nature_of_crime,
+					'Location' : i.location+", "+i.area_name,
+					'Date' : i.date_of_crime,
+					'Time' : i.time_of_crime,
+					'Report Status' : i.report_status,
+				}
+				if i.report_status=="Reported":
+					incident.update({'Report ID' : "#"+i.report_id})
+				incident.update({'Description' : i.description})
+
 				if filter2=="":
 					posts[i] = incident
 					count+=1
+					comment = {}
+					for j in Comment.objects.filter(post_id=i.id):
+						comment.update( {j.comment: 'User '+j.username+' commented: '})
+						comments[i] = comment
 
 				elif (i.nature_of_crime==filter2 or i.report_status==filter2):
 					incident = {
@@ -206,17 +239,23 @@ def filtering(request, area, filter1, filter2=""):
 						'Report Status' : i.report_status,
 					}
 					if i.report_status=="Reported":
-						incident.update({'Report ID' : "#"+i.report_id, 'Description' : i.description})
-					else:
-						incident.update({'Description' : i.description})
+						incident.update({'Report ID' : "#"+i.report_id})
+					incident.update({'Description' : i.description})
 					count+=1
 					posts[i] = incident
+
+					comment = {}
+					for j in Comment.objects.filter(post_id=i.id):
+						comment.update( {j.comment: 'User '+j.username+' commented: '})
+						comments[i] = comment
+
 			no_of_posts = {'Number of posts:':count}
-	return render(request, "main/incidents.html", {'Posts':posts, 'Area':area, 'no_of_posts':no_of_posts})
+	return render(request, "main/incidents.html", {'Posts':posts, 'Area':area, 'no_of_posts':no_of_posts, 'comments':comments})
 
 
 def search_location(request, area, location):
 	posts={}
+	comments={}
 	count=0
 	if request.method=="GET":
 		for i in list(CrimeIncident.objects.all()):
@@ -232,26 +271,30 @@ def search_location(request, area, location):
 					'Report Status' : i.report_status,
 				}
 				if i.report_status=="Reported":
-					incident.update({'Report ID' : "#"+i.report_id, 'Description' : i.description})
-				else:
-					incident.update({'Description' : i.description})
+					incident.update({'Report ID' : "#"+i.report_id})
+				incident.update({'Description' : i.description})
 				posts[i] = incident
 				count += 1
+
+				comment = {}
+				for j in Comment.objects.filter(post_id=i.id):
+					comment.update( {j.comment: 'User '+j.username+' commented: '})
+					comments[i] = comment
+
 		no_of_posts = {'Number of posts:':count}
-	return render(request, "main/incidents.html", {'Posts':posts, 'Area':area, 'no_of_posts':no_of_posts})
+	return render(request, "main/incidents.html", {'Posts':posts, 'Area':area, 'no_of_posts':no_of_posts, 'comments':comments})
 
 
 def filter_by_date(request, area, y1, m1, d1, y2, m2, d2):
 	posts={}
+	comments={}
 	count=0
+	from_date = datetime.date(y1,m1,d1)
+	to_date = datetime.date(y2,m2,d2)
 	if request.method=="GET":
 		for i in list(CrimeIncident.objects.all()):
-			if i.area_name.lower() ==area.lower() :
-				year = int(i.date_of_crime.strftime("%Y"))
-				month = int(i.date_of_crime.strftime("%m"))
-				day = int(i.date_of_crime.strftime("%d"))
-				if (y1<=year<=y2) and (m1<=month<=m2) and (d1<=day<=d2):
-					incident = {
+			if i.area_name.lower()==area.lower() and from_date<=i.date_of_crime<=to_date:
+				incident = {
 						'Post ID' : i.id,
 						'Username' : i.username,
 						'Posted on' : i.timestamp,
@@ -260,27 +303,32 @@ def filter_by_date(request, area, y1, m1, d1, y2, m2, d2):
 						'Date' : i.date_of_crime,
 						'Time' : i.time_of_crime,
 						'Report Status' : i.report_status,
-					}
-					if i.report_status=="Reported":
-						incident.update({'Report ID' : "#"+i.report_id, 'Description' : i.description})
-					else:
-						incident.update({'Description' : i.description})
-					posts[i] = incident
-					count +=1 
+				}
+				if i.report_status=="Reported":
+					incident.update({'Report ID' : "#"+i.report_id})
+				incident.update({'Description' : i.description})
+				posts[i] = incident
+				count +=1 
+
+				comment = {}
+				for j in Comment.objects.filter(post_id=i.id):
+					comment.update( {j.comment: 'User '+j.username+' commented: '})
+					comments[i] = comment
+
 		no_of_posts = {'Number of posts:':count}
-	return render(request, "main/incidents.html", {'Posts':posts, 'Area':area, 'no_of_posts':no_of_posts})
+	return render(request, "main/incidents.html", {'Posts':posts, 'Area':area, 'no_of_posts':no_of_posts, 'comments':comments})
 
 
 def filter_by_time(request, area, h1, m1, h2, m2):
 	posts={}
+	comments={}
 	count=0
+	from_time = datetime.time(h1,m1)
+	to_time = datetime.time(h2,m2)
 	if request.method=="GET":
 		for i in list(CrimeIncident.objects.all()):
-			if i.area_name.lower() ==area.lower() :
-				hour = int(i.time_of_crime.strftime("%H"))
-				minute = int(i.time_of_crime.strftime("%M"))
-				if (m1<=minute<=m2 and h1==h2) or (h1<=hour<=h2):
-					incident = {
+			if i.area_name.lower()==area.lower() and from_time<=i.time_of_crime<=to_time:
+				incident = {
 						'Post ID' : i.id,
 						'Username' : i.username,
 						'Posted on' : i.timestamp,
@@ -289,14 +337,19 @@ def filter_by_time(request, area, h1, m1, h2, m2):
 						'Date' : i.date_of_crime,
 						'Time' : i.time_of_crime,
 						'Report Status' : i.report_status,
-					}
-					if i.report_status=="Reported":
-						incident.update({'Report ID' : "#"+i.report_id, 'Description' : i.description})
-					else:
-						incident.update({'Description' : i.description})
-					posts[i] = incident
-					count += 1
+				}
+				if i.report_status=="Reported":
+					incident.update({'Report ID' : "#"+i.report_id})
+				incident.update({'Description' : i.description})
+				posts[i] = incident
+				count += 1
+
+				comment = {}
+				for j in Comment.objects.filter(post_id=i.id):
+					comment.update( {j.comment: 'User '+j.username+' commented: '})
+					comments[i] = comment
+
 		no_of_posts = {'Number of posts:':count}
-	return render(request, "main/incidents.html", {'Posts':posts, 'Area':area, 'no_of_posts':no_of_posts})
+	return render(request, "main/incidents.html", {'Posts':posts, 'Area':area, 'no_of_posts':no_of_posts,'comments':comments})
 
 

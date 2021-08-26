@@ -1,11 +1,12 @@
 {% extends 'main/base.html' %} <!-- inherits the base html -->
 
-{% block title %}Comment-Crime Area Map{% endblock %}
+{% block title %}Comment-Crime Area Logger{% endblock %}
 
 {% block content %}
 <h1>Post a comment:</h1>
 <br>
-	<form method="post", action="/comment">
+<p style="color:red;">{{Error}}</p>
+	<form method="post", action="/comment/">
 		{% csrf_token %}
 		<table>
 			{{form}}

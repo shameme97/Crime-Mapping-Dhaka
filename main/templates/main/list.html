@@ -5,22 +5,23 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title> {% block title %}View Areas-Crime Area Map{% endblock %} </title>
-	<style type="text/css">
-		 
-
-
-	</style>
+	<title> {% block title %}View Areas-Crime Area Logger{% endblock %} </title>
 </head>
 <body>
-
 
 
 {% block content %}
 	<table> <tr>
 		<td style="width:500px"> <h2>List of Areas:</h2> </td>
 		<td> 
-			<form>  <label> Sort: </label>  
+			<form class="example" action='' id='form'>
+			 	<input type="text" placeholder="Search By Area" name="search" id='query'>
+			</form>
+		</td>
+		</tr>
+		<tr> <td></td>
+		<td> 
+			<form>  <label> Sort in: </label>  
 				<select id='sort' onchange='sortChanged(this.value);'>  
 					<option value = "Default"> Default </option>  
 					<option value = "Ascending"> Ascending </option>  
@@ -28,25 +29,34 @@
 				</select>  
 			</form>  
  		</td>
-	</tr> </table>
-	<p id='demo'> </p>
-<script type="text/javascript">
-	
-function sortChanged(sort) {
-	// body...
-	window.location.href = window.location.href+ '/' + sort
-}
+ 		</tr>
+ 		
+ 	 </table>
 
+<script type="text/javascript">
+
+	const f = document.getElementById('form');
+	const q = document.getElementById('query');
+
+	function submitted(event) {
+	  event.preventDefault();
+	  const url = window.location.href + 'Search/' + q.value;
+	  const win = window.open(url, '_self');
+	  win.focus();
+	}
+	f.addEventListener('submit', submitted);
+
+	function sortChanged(sort) {
+		// body...
+		window.location.href = window.location.href + sort
+	}
 
 </script>
 
-
-
-
-	<table style="width:30%; background-color:#FFFFFF; text-align:left;font-family:tahoma" >
+	<table style="width:30%; text-align:left; font-family:tahoma" >
 		
 		{% for sl,info in my_dict.items %}
-		<tr> <th>  <a href="incidents/{{sl}}">{{sl}}</a> </th> <th> : </th><th> {{info}}  </th> </tr>
+		<tr> <td>  <a href="http://127.0.0.1:8000/Areas/incidents/{{sl}}">{{sl}}</a> </td> <td> : </td><td> {{info}}  </td> </tr>
 		{% endfor %}
 	
 	</table>

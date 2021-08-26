@@ -28,12 +28,12 @@ class Area(models.Model):
 		return str(self.name)+" : "+str(self.number_of_crimes)
 
 
-class Comments(models.Model):
+class Comment(models.Model):
 	# post = models.ForeignKey(CrimeIncident, on_delete=models.CASCADE)
 	email = models.CharField(max_length=50)
 	username = models.CharField(max_length=20)
 	comment = models.CharField(max_length=200)
-	post_id = models.IntegerField()
+	post_id = models.CharField(max_length=10)
 	
 	def __str__(self):
-		return str(self.username)+" commented on Post: "+str(post_id)
+		return str(self.username)+" commented on Post: "+str(self.post_id)
