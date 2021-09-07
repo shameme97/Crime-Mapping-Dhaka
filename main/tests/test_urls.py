@@ -7,7 +7,6 @@ class UrlsTest(SimpleTestCase):
 
 	def test_index_url(self):
 		url = reverse('index')
-		# print(resolve(url))
 		self.assertEquals(resolve(url).func, home)
 
 	def test_home_url(self):
