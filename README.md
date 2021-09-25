@@ -1,5 +1,5 @@
 # Crime-Mapping-Dhaka
-A webapp which would contain the map of Dhaka where people would be able to pin a
+A website which would contain the map of Dhaka where people would be able to pin a
 location for a crime that had occurred to them in that area. A description would be attached
 to the pins where the victims will describe the crime - time & date of crime, nature of crime,
 whether it was reported or not, etc. Users can see the pins and know which areas are more
