@@ -11,3 +11,6 @@ Similar systems exist around the globe but this system is different because the 
 posted by the victims themselves anonymously. The other systems are managed by police
 departments but in our country, Bangladesh, most petty crimes and sexual harassments go unreported
 due to various reasons. This system can help more people share their incidents and help stay safe.
+
+
+*This project has been developed in Python using Django and SQLite database*
