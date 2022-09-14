@@ -14,3 +14,5 @@ due to various reasons. This system can help more people share their incidents a
 
 
 *This project has been developed in Python using Django and SQLite database*
+
+Run command: python manage.py runserver
